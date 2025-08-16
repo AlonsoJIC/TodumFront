@@ -178,7 +178,6 @@ export class TaskFormComponent implements OnInit {
         ...this.taskToEdit,
         description: this.taskToEdit.description?.trim() || ''
       };
-      console.log('Form ngOnInit - initialized task:', this.task);
     }
   }
 
@@ -197,7 +196,6 @@ export class TaskFormComponent implements OnInit {
   }
 
   onSubmit(): void {
-    console.log('Form onSubmit - current task state:', this.task);
     if (this.task.title.trim()) {
       const updatedTask: Task = {
         ...this.task,
@@ -205,7 +203,6 @@ export class TaskFormComponent implements OnInit {
         description: this.task.description?.trim() || '',
         completed: this.task.completed || false
       };
-      console.log('Form onSubmit - sending updatedTask:', updatedTask);
       this.save.emit(updatedTask);
       this.onClose();
     }

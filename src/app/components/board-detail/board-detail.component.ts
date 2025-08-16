@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Board, Card, Task } from '../../models';
 import { BoardService } from '../../services/board.service';
 import { CardService } from '../../services/card.service';
@@ -12,16 +12,38 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-board-detail',
   standalone: true,
-  imports: [CommonModule, CardFormComponent, TaskFormComponent, MatMenuModule, MatIconModule, MatButtonModule, MatDialogModule],
+  imports: [
+    CommonModule,
+    CardFormComponent,
+    TaskFormComponent,
+    MatMenuModule,
+    MatIconModule,
+    MatButtonModule,
+    MatDialogModule,
+    DragDropModule
+  ],
   providers: [CardService, TaskService],
   template: `
     <div class="board-detail">
       @if (board) {
-        <h2>{{ board.title }}</h2>
+        <div class="board-header">
+          <div class="header-top">
+            <div class="back-section" (click)="goBack()">
+              <mat-icon class="back-icon">arrow_back</mat-icon>
+              <span class="back-text">Volver a tus boards</span>
+            </div>
+            <button class="add-card-btn" (click)="showAddCard = true">
+              <mat-icon>add</mat-icon>
+              <span>Agregar carta</span>
+            </button>
+          </div>
+          <h2 class="board-title">{{ board.title }}</h2>
+        </div>
         <div class="cards-container">
           @for (card of cards; track card.id) {
             <div class="card">
@@ -29,11 +51,17 @@ import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
               @if (card.description) {
                 <p>{{ card.description }}</p>
               }
-              <div class="tasks">
+              <div class="tasks" 
+                cdkDropList 
+                [cdkDropListData]="card.tasks"
+                (cdkDropListDropped)="dropTask($event)">
                 @for (task of card.tasks || []; track task.id) {
-                  <div class="task">
+                  <div class="task" cdkDrag>
                     <div class="task-content">
-                      <div class="task-title" [class.completed]="task.completed">{{ task.title }}</div>
+                      <div class="task-drag-handle" cdkDragHandle>⋮⋮</div>
+                      <div class="task-title" [class.completed]="task.completed">
+                        {{ task.title }}
+                      </div>
                       @if (task.description) {
                         <div class="task-description">{{ task.description }}</div>
                       }
@@ -58,12 +86,10 @@ import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
                   </div>
                 }
               </div>
-              <button class="add-task-btn" (click)="showTaskForm(card)">+ Add Task</button>
+              <button class="add-task-btn" (click)="showTaskForm(card)">+ Agregar tarea</button>
             </div>
           }
-          <div class="card new-card" (click)="showAddCard = true">
-            <h3>+ New Card</h3>
-          </div>
+          
         </div>
 
         @if (showAddCard) {
@@ -89,12 +115,137 @@ import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
       padding: 20px;
     }
 
+    .board-header {
+      margin-bottom: 24px;
+
+      .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        padding: 0 4px;
+
+        .back-section {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 10px;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          width: fit-content;
+          height: 36px;
+          
+          &:hover {
+            background: #e9ecef;
+          }
+
+          .back-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .back-text {
+            color: #666;
+            font-size: 0.95rem;
+            user-select: none;
+            line-height: 20px;
+            display: flex;
+            align-items: center;
+          }
+        }
+
+        .add-card-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          padding: 8px 16px;
+          border-radius: 10px;
+          border: none;
+          background: #007bff;
+          color: white;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          font-size: 0.95rem;
+          height: 36px;
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          span {
+            line-height: 20px;
+            display: flex;
+            align-items: center;
+          }
+
+          &:hover {
+            background: #0056b3;
+          }
+        }
+
+        .board-title {
+          margin: 0;
+          padding-left: 8px;
+          font-size: 1.75rem;
+          color: #333;
+        }
+      }
+    }
+
     .cards-container {
       display: flex;
       gap: 20px;
       overflow-x: auto;
       padding: 20px 0;
       min-height: calc(100vh - 100px);
+    }
+
+    .cdk-drag-preview {
+      box-sizing: border-box;
+      border-radius: 4px;
+      box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+                0 8px 10px 1px rgba(0, 0, 0, 0.14),
+                0 3px 14px 2px rgba(0, 0, 0, 0.12);
+      background-color: white;
+      padding: 10px;
+    }
+
+    .cdk-drag-placeholder {
+      opacity: 0.3;
+      background: #ccc;
+      border: 2px dashed #999;
+    }
+
+    .cdk-drop-list-dragging {
+      background-color: rgba(0, 0, 0, 0.04);
+      transition: background-color 0.2s ease;
+    }
+
+    .cdk-drag-animating {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .tasks.cdk-drop-list-dragging .task:not(.cdk-drag-placeholder) {
+      transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+    }
+
+    .task-drag-handle {
+      cursor: move;
+      color: #ccc;
+      margin-right: 8px;
+      user-select: none;
     }
 
     .card {
@@ -221,19 +372,54 @@ export class BoardDetailComponent implements OnInit {
   showAddTask = false;
   selectedCard: Card | null = null;
 
+  enterPredicate = () => true;
+
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private boardService: BoardService,
     private cardService: CardService,
     private taskService: TaskService,
     private dialog: MatDialog
   ) { }
 
+  goBack(): void {
+    this.router.navigate(['/boards']);
+  }
+
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       const boardId = parseInt(params['id'], 10);
       this.loadBoard(boardId);
       this.loadCards(boardId);
+    });
+  }
+
+  dropTask(event: CdkDragDrop<Task[] | undefined>) {
+    if (!event.container.data) return;
+    if (event.previousContainer === event.container) {
+      moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
+
+      // Actualizar las posiciones en la base de datos
+      const tasks = event.container.data;
+      tasks.forEach((task, index) => {
+        if (task.id) {
+          const updatedTask = { ...task, position: index };
+          this.taskService.updateTask(task.id, updatedTask).subscribe({
+            error: (error) => console.error('Error updating task position:', error)
+          });
+        }
+      });
+    }
+  } loadTasksForCard(cardId: number): void {
+    this.taskService.getTasksByCardId(cardId).subscribe({
+      next: (tasks) => {
+        const card = this.cards.find(c => c.id === cardId);
+        if (card) {
+          card.tasks = tasks.sort((a, b) => (a.position || 0) - (b.position || 0));
+        }
+      },
+      error: (error) => console.error('Error loading tasks:', error)
     });
   }
 
@@ -246,7 +432,15 @@ export class BoardDetailComponent implements OnInit {
 
   loadCards(boardId: number): void {
     this.cardService.getCardsByBoardId(boardId).subscribe({
-      next: (cards) => this.cards = cards,
+      next: (cards) => {
+        this.cards = cards;
+        // Cargar y ordenar las tareas para cada tarjeta
+        cards.forEach(card => {
+          if (card.id) {
+            this.loadTasksForCard(card.id);
+          }
+        });
+      },
       error: (error) => console.error('Error loading cards:', error)
     });
   }

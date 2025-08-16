@@ -35,9 +35,6 @@ export class TaskDialogComponent {
   ) { }
 
   onSave(task: Task) {
-    console.log('Dialog onSave - Task data before close:', task);
-    console.log('Dialog onSave - Original data:', this.data);
-
     // Asegurarnos de que todos los campos necesarios están presentes
     const taskToSave: Task = {
       id: task.id,
@@ -47,11 +44,10 @@ export class TaskDialogComponent {
       completed: task.completed || false,
       cardId: this.data.cardId // Usar el cardId original
     };
-
-    console.log('Dialog onSave - Task data after preparation:', taskToSave);
     this.dialogRef.close(taskToSave);
-  } onClose() {
-    console.log('Dialog onClose called');
+  }
+
+  onClose() {
     this.dialogRef.close(null);
   }
 }

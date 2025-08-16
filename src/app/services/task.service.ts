@@ -4,6 +4,11 @@ import { Observable } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { Task } from '../models';
 
+interface MoveTaskDTO {
+  taskId: number;
+  newPosition: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,9 +34,6 @@ export class TaskService {
   }
 
   updateTask(id: number, task: Task): Observable<Task> {
-    console.log('TaskService updateTask - URL:', `${this.apiUrl}/${id}`);
-    console.log('TaskService updateTask - Request payload:', task);
-
     // Crear un DTO que coincida con el backend
     const taskDTO = {
       id: task.id,
@@ -43,10 +45,6 @@ export class TaskService {
     };
 
     return this.http.put<Task>(`${this.apiUrl}/${id}`, taskDTO).pipe(
-      tap((response: Task) => {
-        console.log('TaskService updateTask response:', response);
-        return response;
-      }),
       catchError((error: any) => {
         console.error('TaskService updateTask error:', error);
         throw error;
@@ -56,6 +54,19 @@ export class TaskService {
 
   deleteTask(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  moveTask(taskId: number, newPosition: number): Observable<Task> {
+    const moveTaskDTO: MoveTaskDTO = {
+      taskId,
+      newPosition
+    };
+    return this.http.put<Task>(`${this.apiUrl}/${taskId}/move`, moveTaskDTO).pipe(
+      catchError(error => {
+        console.error('Error moving task:', error);
+        throw error;
+      })
+    );
   }
 
   toggleTaskComplete(id: number): Observable<Task> {

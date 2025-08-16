@@ -247,7 +247,6 @@ export class TaskListComponent implements OnInit {
   }
 
   editTask(task: Task) {
-    console.log('TaskList editTask - original task:', task);
     // Asegurarnos de que tenemos todos los datos necesarios
     const taskToEdit: Task = {
       id: task.id!,
@@ -257,7 +256,6 @@ export class TaskListComponent implements OnInit {
       completed: task.completed || false,
       cardId: this.card?.id || task.cardId // Asegurarnos de que tenemos el cardId
     };
-    console.log('TaskList editTask - prepared task:', taskToEdit);
 
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       data: taskToEdit,
@@ -265,18 +263,11 @@ export class TaskListComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      console.log('TaskList dialog closed - result:', result);
-      console.log('TaskList current card state:', this.card);
       if (result) {
-        console.log('TaskList has result');
         if (this.card?.tasks) {
-          console.log('TaskList has card tasks');
           if (result.id) {
-            console.log('TaskList has result.id');
-            console.log('TaskList attempting to update task with:', result);
             this.taskService.updateTask(result.id, result).subscribe({
               next: (updatedTask: Task) => {
-                console.log('TaskList update success - updatedTask:', updatedTask);
                 const index = this.card!.tasks!.findIndex(t => t.id === updatedTask.id);
                 if (index !== -1) {
                   this.card!.tasks![index] = updatedTask;
