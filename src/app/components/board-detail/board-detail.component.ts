@@ -531,13 +531,23 @@ export class BoardDetailComponent implements OnInit {
 
     this.taskService.toggleTaskComplete(task.id).subscribe({
       next: (updatedTask: Task) => {
-        const card = this.cards.find(c => c.id === updatedTask.cardId);
-        if (card && card.tasks) {
-          const index = card.tasks.findIndex(t => t.id === updatedTask.id);
-          if (index !== -1) {
-            card.tasks[index] = updatedTask;
+        console.log('BoardDetail - toggle response:', updatedTask);
+        // Encontrar y actualizar la tarea en la estructura de datos
+        this.cards = this.cards.map(card => {
+          if (card.tasks) {
+            const taskIndex = card.tasks.findIndex(t => t.id === updatedTask.id);
+            if (taskIndex !== -1) {
+              console.log('Found task in card:', card.id);
+              console.log('Current task state:', card.tasks[taskIndex]);
+              // Si encontramos la tarea, crear un nuevo array con la tarea actualizada
+              const updatedTasks = [...card.tasks];
+              updatedTasks[taskIndex] = updatedTask;
+              console.log('Updated task state:', updatedTask);
+              return { ...card, tasks: updatedTasks };
+            }
           }
-        }
+          return card;
+        });
       },
       error: (error: Error) => {
         console.error('Error toggling task:', error);

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { tap, catchError } from 'rxjs/operators';
+import { tap, catchError, switchMap, map } from 'rxjs/operators';
 import { Task } from '../models';
 
 interface MoveTaskDTO {
@@ -18,15 +18,30 @@ export class TaskService {
   constructor(private http: HttpClient) { }
 
   getAllTasks(): Observable<Task[]> {
-    return this.http.get<Task[]>(this.apiUrl);
+    return this.http.get<Task[]>(this.apiUrl).pipe(
+      map((tasks: any[]) => tasks.map(task => ({
+        ...task,
+        completed: task.completed || false
+      })))
+    );
   }
 
   getTaskById(id: number): Observable<Task> {
-    return this.http.get<Task>(`${this.apiUrl}/${id}`);
+    return this.http.get<Task>(`${this.apiUrl}/${id}`).pipe(
+      map((task: any) => ({
+        ...task,
+        completed: task.completed || false
+      }))
+    );
   }
 
   getTasksByCardId(cardId: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl}/card/${cardId}`);
+    return this.http.get<Task[]>(`${this.apiUrl}/card/${cardId}`).pipe(
+      map((tasks: any[]) => tasks.map(task => ({
+        ...task,
+        completed: task.completed || false
+      })))
+    );
   }
 
   createTask(task: Task): Observable<Task> {
@@ -41,10 +56,18 @@ export class TaskService {
       title: task.title,
       description: task.description || '',
       position: task.position,
-      completed: task.completed || false
+      completed: task.completed
     };
 
+    console.log('TaskService - updateTask - sending to backend:', taskDTO);
+
     return this.http.put<Task>(`${this.apiUrl}/${id}`, taskDTO).pipe(
+      tap(response => console.log('TaskService - updateTask - backend response:', response)),
+      map((response: any) => ({
+        ...response,
+        completed: response.completed ?? taskDTO.completed // Usar el valor del backend si existe
+      })),
+      tap(finalTask => console.log('TaskService - updateTask - final mapped task:', finalTask)),
       catchError((error: any) => {
         console.error('TaskService updateTask error:', error);
         throw error;
@@ -70,6 +93,18 @@ export class TaskService {
   }
 
   toggleTaskComplete(id: number): Observable<Task> {
-    return this.http.patch<Task>(`${this.apiUrl}/${id}/toggle`, {});
+    console.log('TaskService - toggleTaskComplete - starting for id:', id);
+    return this.http.get<Task>(`${this.apiUrl}/${id}`).pipe(
+      tap(task => console.log('TaskService - current task state:', task)),
+      switchMap((task: Task) => {
+        const updatedTask: Task = {
+          ...task,
+          completed: !task.completed
+        };
+        console.log('TaskService - sending updated task:', updatedTask);
+        return this.updateTask(id, updatedTask);
+      }),
+      tap(result => console.log('TaskService - toggle result:', result))
+    );
   }
 }
