@@ -59,8 +59,13 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from 
                   <div class="task" cdkDrag>
                     <div class="task-content">
                       <div class="task-drag-handle" cdkDragHandle>⋮⋮</div>
-                      <div class="task-title" [class.completed]="task.completed">
-                        {{ task.title }}
+                      <div class="task-header">
+                        <div class="task-title" [class.completed]="task.completed">
+                          {{ task.title }}
+                        </div>
+                        <div class="task-status-badge" [class.completed]="task.completed">
+                          {{ task.completed ? 'Completada' : 'Pendiente' }}
+                        </div>
                       </div>
                       @if (task.description) {
                         <div class="task-description">{{ task.description }}</div>
@@ -282,15 +287,36 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from 
           min-width: 0;
           margin-right: 8px;
 
+          .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+          }
+
           .task-title {
             font-size: 0.95rem;
             font-weight: 500;
-            margin-bottom: 4px;
             word-wrap: break-word;
+            flex: 1;
+            margin-right: 8px;
 
             &.completed {
               text-decoration: line-through;
               color: #888;
+            }
+          }
+
+          .task-status-badge {
+            font-size: 0.75rem;
+            padding: 2px 6px;
+            border-radius: 12px;
+            background-color: #dc3545;
+            color: white;
+            white-space: nowrap;
+
+            &.completed {
+              background-color: #28a745;
             }
           }
 
@@ -563,9 +589,15 @@ export class BoardDetailComponent implements OnInit {
 
     this.taskService.deleteTask(task.id).subscribe({
       next: () => {
+        // Buscar la tarjeta que contiene la tarea
         const card = this.cards.find(c => c.id === task.cardId);
         if (card && card.tasks) {
-          card.tasks = card.tasks.filter(t => t.id !== task.id);
+          // Filtrar la tarea eliminada
+          const updatedTasks = card.tasks.filter(t => t.id !== task.id);
+          // Actualizar la tarjeta específica
+          card.tasks = updatedTasks;
+          // Forzar la actualización creando un nuevo array de cards
+          this.cards = [...this.cards];
         }
       },
       error: (error: Error) => {

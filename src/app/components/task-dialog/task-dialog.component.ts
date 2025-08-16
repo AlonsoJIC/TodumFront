@@ -35,19 +35,32 @@ export class TaskDialogComponent {
   ) { }
 
   onSave(task: Task) {
+    console.log('TaskDialog onSave - received task:', task);
+    this.isSaving = true;
+
     // Asegurarnos de que todos los campos necesarios están presentes
     const taskToSave: Task = {
-      id: task.id,
+      ...this.data, // Mantener los datos originales
+      ...task, // Sobrescribir con los nuevos datos
       title: task.title.trim(),
       description: task.description?.trim() || '',
-      position: task.position || this.data.position,
-      completed: task.completed || false,
-      cardId: this.data.cardId // Usar el cardId original
+      cardId: this.data.cardId // Asegurar que se mantiene el cardId original
     };
-    this.dialogRef.close(taskToSave);
+
+    console.log('TaskDialog onSave - saving task:', taskToSave);
+    setTimeout(() => {
+      this.dialogRef.close(taskToSave);
+      this.isSaving = false;
+    }, 0);
   }
 
   onClose() {
-    this.dialogRef.close(null);
+    // Solo cerramos si no estamos en medio de un guardado
+    if (!this.isSaving) {
+      console.log('TaskDialog onClose - closing without save');
+      this.dialogRef.close(null);
+    }
   }
+
+  private isSaving = false;
 }

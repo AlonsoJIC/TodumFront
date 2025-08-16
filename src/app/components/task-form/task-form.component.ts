@@ -197,14 +197,12 @@ export class TaskFormComponent implements OnInit {
 
   onSubmit(): void {
     if (this.task.title.trim()) {
-      const updatedTask: Task = {
-        ...this.task,
-        title: this.task.title.trim(),
-        description: this.task.description?.trim() || '',
-        completed: this.task.completed || false
-      };
-      this.save.emit(updatedTask);
-      this.onClose();
+      console.log('TaskForm onSubmit - submitting task:', this.task);
+      this.save.emit(this.task);
+      // No emitimos close aquí, el diálogo se encargará de cerrarse
+      return;
     }
   }
+
 }
+
