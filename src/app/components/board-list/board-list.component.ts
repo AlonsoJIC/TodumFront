@@ -9,81 +9,9 @@ import { BoardFormComponent } from '../board-form/board-form.component';
 @Component({
   selector: 'app-board-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, BoardFormComponent],
-  template: `
-    <div class="board-list">
-      <h2>My Boards</h2>
-      <div class="board-grid">
-        @for (board of boards; track board.id) {
-          <div class="board-card" [routerLink]="['/boards', board.id]">
-            <h3>{{ board.title }}</h3>
-            <p>{{ board.description }}</p>
-          </div>
-        }
-        <div class="board-card new-board" (click)="showBoardForm()">
-          <h3>+ New Board</h3>
-        </div>
-      </div>
-    </div>
-
-    @if (isFormVisible) {
-      <app-board-form
-        (close)="hideBoardForm()"
-        (save)="onBoardCreate($event)"
-      />
-    }
-  `,
-  styles: [`
-    .board-list {
-      padding: 20px;
-    }
-    
-    .board-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 20px;
-      margin-top: 20px;
-    }
-    
-    .board-card {
-      background: #fff;
-      border-radius: 8px;
-      padding: 20px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: transform 0.2s;
-    
-      &:hover {
-        transform: translateY(-2px);
-      }
-    
-      h3 {
-        margin: 0 0 10px;
-        color: #333;
-      }
-    
-      p {
-        margin: 0;
-        color: #666;
-      }
-    }
-    
-    .new-board {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #f5f5f5;
-      border: 2px dashed #ddd;
-      
-      h3 {
-        color: #666;
-      }
-      
-      &:hover {
-        background: #ebebeb;
-      }
-    }
-  `]
+  templateUrl: './board-list.component.html',
+  styleUrls: ['./board-list.component.scss'],
+  imports: [CommonModule, RouterModule, BoardFormComponent]
 })
 export class BoardListComponent implements OnInit {
   boards: Board[] = [];

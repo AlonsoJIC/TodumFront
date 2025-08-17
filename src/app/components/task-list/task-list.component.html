@@ -1,0 +1,50 @@
+<div class="task-container">
+  @if (card) {
+  <div class="card-header">
+    <h2>{{ card.title }}</h2>
+    @if (card.description) {
+    <p class="description">{{ card.description }}</p>
+    }
+  </div>
+
+  <div class="tasks">
+    @if ((card.tasks || []).length === 0) {
+    <div class="no-tasks">
+      <p>No tasks yet. Click "Add Task" to create one.</p>
+    </div>
+    }
+    @for (task of card.tasks || []; track task.id) {
+    <div class="task-item">
+      <span [class.completed]="task.completed">{{ task.title }}</span>
+      <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-dots">
+        ⋮
+      </button>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="toggleTask(task)">
+          <mat-icon>{{ task.completed ? 'task_alt' : 'radio_button_unchecked' }}</mat-icon>
+          <span>{{ task.completed ? 'Marcar como pendiente' : 'Marcar como hecha' }}</span>
+        </button>
+        <button mat-menu-item (click)="editTask(task)">
+          <mat-icon>edit</mat-icon>
+          <span>Editar</span>
+        </button>
+        <button mat-menu-item (click)="deleteTask(task)">
+          <mat-icon>delete</mat-icon>
+          <span>Eliminar</span>
+        </button>
+      </mat-menu>
+    </div>
+    }
+  </div>
+
+  <button class="add-task-btn" (click)="showAddTask = true">
+    + Add Task
+  </button>
+
+  @if (showAddTask) {
+  <app-task-form (close)="showAddTask = false" (save)="onSaveTask($event)" />
+  }
+  } @else {
+  <div class="loading">Loading...</div>
+  }
+</div>

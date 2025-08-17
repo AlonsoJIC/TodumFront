@@ -1,0 +1,75 @@
+<div class="board-detail"></div>
+@if (board) {
+<div class="board-header">
+  <div class="header-top">
+    <div class="back-section" (click)="goBack()">
+      <mat-icon class="back-icon">arrow_back</mat-icon>
+      <span class="back-text">Volver a tus boards</span>
+    </div>
+    <button class="add-card-btn" (click)="showAddCard = true">
+      <mat-icon>add</mat-icon>
+      <span>Agregar carta</span>
+    </button>
+  </div>
+  <h2 class="board-title">{{ board.title }}</h2>
+</div>
+<div class="cards-container">
+  @for (card of cards; track card.id) {
+  <div class="card">
+    <h3>{{ card.title }}</h3>
+    @if (card.description) {
+    <p>{{ card.description }}</p>
+    }
+    <div class="tasks" cdkDropList [cdkDropListData]="card.tasks" (cdkDropListDropped)="dropTask($event)">
+      @for (task of card.tasks || []; track task.id) {
+      <div class="task" cdkDrag>
+        <div class="task-content">
+          <div class="task-drag-handle" cdkDragHandle>⋮⋮</div>
+          <div class="task-header">
+            <div class="task-title" [class.completed]="task.completed">
+              {{ task.title }}
+            </div>
+            <div class="task-status-badge" [class.completed]="task.completed">
+              {{ task.completed ? 'Completada' : 'Pendiente' }}
+            </div>
+          </div>
+          @if (task.description) {
+          <div class="task-description">{{ task.description }}</div>
+          }
+        </div>
+        <button mat-icon-button [matMenuTriggerFor]="menu" class="menu-dots">
+          ⋮
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="toggleTask(task)">
+            <mat-icon>{{ task.completed ? 'task_alt' : 'radio_button_unchecked' }}</mat-icon>
+            <span>{{ task.completed ? 'Marcar como pendiente' : 'Marcar como hecha' }}</span>
+          </button>
+          <button mat-menu-item (click)="editTask(task, card.id!)">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+          <button mat-menu-item (click)="deleteTask(task)">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </mat-menu>
+      </div>
+      }
+    </div>
+    <button class="add-task-btn" (click)="showTaskForm(card)">+ Agregar tarea</button>
+  </div>
+  }
+
+</div>
+
+@if (showAddCard) {
+<app-card-form (close)="showAddCard = false" (save)="onSaveCard($event)" />
+}
+
+@if (showAddTask) {
+<app-task-form (close)="showAddTask = false" (save)="onSaveTask($event)" />
+}
+} @else {
+<p>Loading...</p>
+}

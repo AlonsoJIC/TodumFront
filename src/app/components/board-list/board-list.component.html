@@ -1,0 +1,18 @@
+<div class="board-list">
+  <h2>My Boards</h2>
+  <div class="board-grid">
+    @for (board of boards; track board.id) {
+    <div class="board-card" [routerLink]="['/boards', board.id]">
+      <h3>{{ board.title }}</h3>
+      <p>{{ board.description }}</p>
+    </div>
+    }
+    <div class="board-card new-board" (click)="showBoardForm()">
+      <h3>+ New Board</h3>
+    </div>
+  </div>
+</div>
+
+@if (isFormVisible) {
+<app-board-form (close)="hideBoardForm()" (save)="onBoardCreate($event)" />
+}

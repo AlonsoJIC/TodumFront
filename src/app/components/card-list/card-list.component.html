@@ -1,0 +1,23 @@
+<div class="cards-container">
+  <h2>Board Cards</h2>
+  <div class="cards-grid">
+    @for (card of cards; track card.id) {
+    <div class="card" (click)="onCardClick(card)">
+      <h3>{{ card.title }}</h3>
+      @if (card.description) {
+      <p>{{ card.description }}</p>
+      }
+      <div class="task-count">
+        Tasks: {{ (card.tasks || []).length }}
+      </div>
+    </div>
+    }
+    <div class="card new-card" (click)="showAddCard = true">
+      <h3>+ New Card</h3>
+    </div>
+  </div>
+
+  @if (showAddCard) {
+  <app-card-form (close)="showAddCard = false" (save)="onSaveCard($event)" />
+  }
+</div>

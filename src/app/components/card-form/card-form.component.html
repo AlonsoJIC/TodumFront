@@ -1,0 +1,21 @@
+<div class="card-form-overlay" (click)="onClose()">
+  <div class="card-form" (click)="$event.stopPropagation()">
+    <h3>{{ editMode ? 'Edit Card' : 'Create New Card' }}</h3>
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <div class="form-group">
+        <label for="title">Card Title</label>
+        <input type="text" id="title" name="title" [(ngModel)]="card.title" required #title="ngModel">
+        @if (title.invalid && (title.dirty || title.touched)) {
+        <small class="error">Title is required</small>
+        }
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="cancel" (click)="onClose()">Cancel</button>
+        <button type="submit" [disabled]="!form.valid">
+          {{ editMode ? 'Save' : 'Create' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

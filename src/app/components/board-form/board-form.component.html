@@ -1,0 +1,25 @@
+<div class="board-form-overlay" (click)="onClose()">
+  <div class="board-form" (click)="$event.stopPropagation()">
+    <h3>Create New Board</h3>
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+      <div class="form-group">
+        <label for="title">Board Title</label>
+        <input type="text" id="title" name="title" [(ngModel)]="board.title" required #name="ngModel">
+        @if (name.invalid && (name.dirty || name.touched)) {
+        <small class="error">Name is required</small>
+        }
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description (optional)</label>
+        <textarea id="description" name="description" [(ngModel)]="board.description" rows="3">
+        </textarea>
+      </div>
+
+      <div class="button-group">
+        <button type="button" class="cancel" (click)="onClose()">Cancel</button>
+        <button type="submit" [disabled]="!form.valid">Create</button>
+      </div>
+    </form>
+  </div>
+</div>

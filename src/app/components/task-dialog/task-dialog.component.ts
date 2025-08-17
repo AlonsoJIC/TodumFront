@@ -7,26 +7,9 @@ import { TaskFormComponent } from '../task-form/task-form.component';
 @Component({
   selector: 'app-task-dialog',
   standalone: true,
-  imports: [CommonModule, MatDialogModule, TaskFormComponent],
-  template: `
-    <h2 mat-dialog-title>Editar Tarea</h2>
-    <mat-dialog-content>
-      <app-task-form
-        [editMode]="true"
-        [taskToEdit]="data"
-        (save)="onSave($event)"
-        (close)="onClose()"
-      />
-    </mat-dialog-content>
-  `,
-  styles: [`
-    :host {
-      display: block;
-      padding: 20px;
-      max-width: 500px;
-      width: 100%;
-    }
-  `]
+  templateUrl: './task-dialog.component.html',
+  styleUrls: ['./task-dialog.component.scss'],
+  imports: [CommonModule, MatDialogModule, TaskFormComponent]
 })
 export class TaskDialogComponent {
   constructor(
