@@ -12,6 +12,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
+import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
 import { CdkDragDrop, moveItemInArray, transferArrayItem, DragDropModule } from '@angular/cdk/drag-drop';
 
 @Component({
@@ -294,7 +295,10 @@ export class BoardDetailComponent implements OnInit {
   loadCards(boardId: number): void {
     this.cardService.getCardsByBoardId(boardId).subscribe({
       next: (cards) => {
-        this.cards = cards;
+        // ⭐ Ordenar las cartas por posición para asegurar el orden correcto
+        this.cards = cards.sort((a, b) => (a.position || 0) - (b.position || 0));
+        console.log('📋 Cartas cargadas y ordenadas por posición:', this.cards.map(c => ({ id: c.id, title: c.title, position: c.position })));
+
         // Cargar y ordenar las tareas para cada tarjeta
         cards.forEach(card => {
           if (card.id) {
@@ -314,22 +318,66 @@ export class BoardDetailComponent implements OnInit {
   onSaveCard(cardData: Partial<Card>): void {
     if (!this.board?.id) return;
 
-    const newCard: Card = {
-      ...cardData as Card,
-      boardId: this.board.id,
-      position: this.cards.length,
-      title: cardData.title || ''
-    };
+    if (this.selectedCard && this.selectedCard.id) {
+      // Modo edición
+      console.log('📝 Actualizando carta existente:', cardData);
+      const updatedCard: Card = {
+        ...this.selectedCard,
+        ...cardData as Card,
+        title: cardData.title || ''
+      };
 
-    this.cardService.createCard(newCard).subscribe({
-      next: (card: Card) => {
-        this.cards.push(card);
-        this.showAddCard = false;
-      },
-      error: (error: Error) => {
-        console.error('Error creating card:', error);
-      }
-    });
+      this.cardService.updateCard(this.selectedCard.id, updatedCard).subscribe({
+        next: (card: Card) => {
+          console.log('✅ Carta actualizada exitosamente:', card);
+          // Actualizar la carta en la lista local
+          const cardIndex = this.cards.findIndex(c => c.id === card.id);
+          if (cardIndex !== -1) {
+            this.cards[cardIndex] = { ...this.cards[cardIndex], ...card };
+          }
+          this.showAddCard = false;
+          this.selectedCard = null;
+        },
+        error: (error: Error) => {
+          console.error('❌ Error updating card:', error);
+          alert('Error al actualizar la carta. Por favor, inténtalo de nuevo.');
+        }
+      });
+    } else {
+      // Modo creación - ⭐ Calcular posición para que quede al final (más a la derecha)
+      console.log('➕ Creando nueva carta:', cardData);
+
+      // Encontrar la posición más alta actual y agregar 1
+      const maxPosition = this.cards.length > 0
+        ? Math.max(...this.cards.map(card => card.position || 0))
+        : -1;
+      const newPosition = maxPosition + 1;
+
+      console.log('📍 Nueva posición calculada:', newPosition, '(máxima actual:', maxPosition, ')');
+
+      const newCard: Card = {
+        ...cardData as Card,
+        boardId: this.board.id,
+        position: newPosition,
+        title: cardData.title || ''
+      };
+
+      this.cardService.createCard(newCard).subscribe({
+        next: (card: Card) => {
+          console.log('✅ Carta creada exitosamente con posición:', card.position, card);
+          // ⭐ Insertar la carta al final del array para mantener el orden visual
+          this.cards.push(card);
+          // Reordenar por si acaso para mantener consistencia
+          this.cards.sort((a, b) => (a.position || 0) - (b.position || 0));
+          this.showAddCard = false;
+          this.selectedCard = null;
+        },
+        error: (error: Error) => {
+          console.error('❌ Error creating card:', error);
+          alert('Error al crear la carta. Por favor, inténtalo de nuevo.');
+        }
+      });
+    }
   }
 
   onSaveTask(taskData: Partial<Task>): void {
@@ -429,19 +477,102 @@ export class BoardDetailComponent implements OnInit {
   deleteTask(task: Task): void {
     if (!task.id) return;
 
-    this.taskService.deleteTask(task.id).subscribe({
-      next: () => {
-        this.cards = this.cards.map(card => {
-          if (card.id === task.cardId && card.tasks) {
-            return {
-              ...card,
-              tasks: card.tasks.filter(t => t.id !== task.id)
-            };
+    // Abrir modal de confirmación bonito
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '400px',
+      data: {
+        title: 'Eliminar Tarea',
+        message: `¿Estás seguro de que quieres eliminar la tarea "${task.title}"? Esta acción no se puede deshacer.`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true && task.id) {
+        console.log('🗑️ Eliminando tarea:', task);
+
+        this.taskService.deleteTask(task.id).subscribe({
+          next: () => {
+            console.log('✅ Tarea eliminada exitosamente');
+            this.cards = this.cards.map(card => {
+              if (card.id === task.cardId && card.tasks) {
+                return {
+                  ...card,
+                  tasks: card.tasks.filter(t => t.id !== task.id)
+                };
+              }
+              return card;
+            });
+          },
+          error: (error: Error) => {
+            console.error('❌ Error deleting task:', error);
+            // Modal de error bonito
+            this.dialog.open(ConfirmationDialogComponent, {
+              width: '400px',
+              data: {
+                title: 'Error',
+                message: 'No se pudo eliminar la tarea. Por favor, inténtalo de nuevo.',
+                confirmText: 'Entendido',
+                cancelText: '',
+                type: 'warning'
+              }
+            });
           }
-          return card;
         });
-      },
-      error: (error: Error) => console.error('Error deleting task:', error)
+      }
+    });
+  }
+
+  editCard(card: Card): void {
+    console.log('📝 Editando carta:', card);
+    // Establecer la carta seleccionada para modo edición
+    this.selectedCard = { ...card }; // Crear una copia para evitar mutaciones
+    this.showAddCard = true;
+  }
+
+  deleteCard(card: Card): void {
+    if (!card.id) return;
+
+    // Abrir modal de confirmación bonito
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
+      width: '450px',
+      data: {
+        title: 'Eliminar Carta',
+        message: `¿Estás seguro de que quieres eliminar la carta "${card.title}"? Esta acción también eliminará todas las tareas dentro de ella y no se puede deshacer.`,
+        confirmText: 'Eliminar',
+        cancelText: 'Cancelar',
+        type: 'danger'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === true && card.id) {
+        console.log('🗑️ Eliminando carta:', card);
+
+        this.cardService.deleteCard(card.id).subscribe({
+          next: () => {
+            console.log('✅ Carta eliminada exitosamente');
+            // Remover la carta de la lista local
+            this.cards = this.cards.filter(c => c.id !== card.id);
+          },
+          error: (error: Error) => {
+            console.error('❌ Error deleting card:', error);
+            // También podemos mostrar un modal de error bonito aquí
+            const errorDialog = this.dialog.open(ConfirmationDialogComponent, {
+              width: '400px',
+              data: {
+                title: 'Error',
+                message: 'No se pudo eliminar la carta. Por favor, inténtalo de nuevo.',
+                confirmText: 'Entendido',
+                cancelText: '',
+                type: 'warning'
+              }
+            });
+          }
+        });
+      }
     });
   }
 }

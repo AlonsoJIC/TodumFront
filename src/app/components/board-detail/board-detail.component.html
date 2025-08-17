@@ -22,7 +22,22 @@
 <div class="cards-container" cdkDropListGroup>
   @for (card of cards; track card.id) {
   <div class="card">
-    <h3>{{ card.title }}</h3>
+    <div class="card-header">
+      <h3>{{ card.title }}</h3>
+      <button mat-icon-button [matMenuTriggerFor]="cardMenu" class="card-menu-dots">
+        ⋮
+      </button>
+      <mat-menu #cardMenu="matMenu">
+        <button mat-menu-item (click)="editCard(card)">
+          <mat-icon>edit</mat-icon>
+          <span>Editar carta</span>
+        </button>
+        <button mat-menu-item (click)="deleteCard(card)" class="delete-item">
+          <mat-icon>delete</mat-icon>
+          <span>Eliminar carta</span>
+        </button>
+      </mat-menu>
+    </div>
     @if (card.description) {
     <p>{{ card.description }}</p>
     }
@@ -71,7 +86,8 @@
 </div>
 
 @if (showAddCard) {
-<app-card-form (close)="showAddCard = false" (save)="onSaveCard($event)" />
+<app-card-form [editMode]="!!selectedCard?.id" [cardData]="selectedCard"
+  (close)="showAddCard = false; selectedCard = null" (save)="onSaveCard($event)" />
 }
 
 @if (showAddTask) {

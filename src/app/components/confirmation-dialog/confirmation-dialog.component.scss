@@ -1,0 +1,115 @@
+.confirmation-dialog {
+  padding: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  min-width: 400px;
+  max-width: 500px;
+
+  .dialog-header {
+    padding: 24px 24px 16px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid #e0e0e0;
+
+    &.dialog-danger {
+      background-color: #ffebee;
+      
+      .dialog-icon {
+        color: #d32f2f;
+      }
+    }
+
+    &.dialog-warning {
+      background-color: #fff3e0;
+      
+      .dialog-icon {
+        color: #f57c00;
+      }
+    }
+
+    &.dialog-info {
+      background-color: #e3f2fd;
+      
+      .dialog-icon {
+        color: #1976d2;
+      }
+    }
+
+    .dialog-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .dialog-title {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+  }
+
+  .dialog-content {
+    padding: 20px 24px;
+
+    .dialog-message {
+      margin: 0;
+      color: #666;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+  }
+
+  .dialog-actions {
+    padding: 16px 24px 24px 24px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    border-top: 1px solid #e0e0e0;
+
+    .cancel-button {
+      color: #666;
+      
+      &:hover {
+        background-color: #f5f5f5;
+      }
+    }
+
+    .confirm-button {
+      &.confirm-danger {
+        background-color: #d32f2f;
+        color: white;
+        
+        &:hover {
+          background-color: #b71c1c;
+        }
+      }
+
+      &.confirm-warning {
+        background-color: #f57c00;
+        color: white;
+        
+        &:hover {
+          background-color: #e65100;
+        }
+      }
+
+      &.confirm-info {
+        background-color: #1976d2;
+        color: white;
+        
+        &:hover {
+          background-color: #1565c0;
+        }
+      }
+    }
+  }
+}
+
+// Override del overlay para centrar mejor el diálogo
+:host {
+  .mat-mdc-dialog-container {
+    border-radius: 8px !important;
+  }
+}
