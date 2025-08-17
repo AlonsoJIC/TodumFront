@@ -12,15 +12,22 @@
     </button>
   </div>
   <h2 class="board-title">{{ board.title }}</h2>
+  @if (isProcessingDragDrop) {
+  <div class="processing-indicator">
+    <mat-icon class="spin">sync</mat-icon>
+    <span>Actualizando posiciones...</span>
+  </div>
+  }
 </div>
-<div class="cards-container">
+<div class="cards-container" cdkDropListGroup>
   @for (card of cards; track card.id) {
   <div class="card">
     <h3>{{ card.title }}</h3>
     @if (card.description) {
     <p>{{ card.description }}</p>
     }
-    <div class="tasks" cdkDropList [cdkDropListData]="card.tasks" (cdkDropListDropped)="dropTask($event)">
+    <div class="tasks" cdkDropList [cdkDropListData]="card.tasks" [id]="'card-' + card.id"
+      [cdkDropListDisabled]="isProcessingDragDrop" (cdkDropListDropped)="dropTask($event)">
       @for (task of card.tasks || []; track task.id) {
       <div class="task" cdkDrag>
         <div class="task-content">

@@ -36,11 +36,31 @@ export class TaskService {
   }
 
   getTasksByCardId(cardId: number): Observable<Task[]> {
-    return this.http.get<Task[]>(`${this.apiUrl}/card/${cardId}`).pipe(
+    console.log('🔍 TaskService - getTasksByCardId - solicitando tareas para carta:', cardId);
+    console.log('🔍 TaskService - getTasksByCardId - URL:', `${this.apiUrl}/card/${cardId}`);
+
+    // Agregar timestamp para evitar caché
+    const timestamp = new Date().getTime();
+    const url = `${this.apiUrl}/card/${cardId}?t=${timestamp}`;
+    console.log('🔍 TaskService - getTasksByCardId - URL con timestamp:', url);
+
+    return this.http.get<Task[]>(url).pipe(
+      tap(tasks => {
+        console.log('📋 TaskService - getTasksByCardId - respuesta del backend (RAW):', tasks);
+        tasks.forEach(task => {
+          console.log(`📋 Task ID ${task.id}: cardId=${task.cardId}, position=${task.position}, title="${task.title}"`);
+        });
+      }),
       map((tasks: any[]) => tasks.map(task => ({
         ...task,
         completed: task.completed || false
-      })))
+      }))),
+      tap(mappedTasks => {
+        console.log('📋 TaskService - getTasksByCardId - tareas mapeadas:', mappedTasks);
+        mappedTasks.forEach(task => {
+          console.log(`📋 Mapped Task ID ${task.id}: cardId=${task.cardId}, position=${task.position}, title="${task.title}"`);
+        });
+      })
     );
   }
 
@@ -59,17 +79,29 @@ export class TaskService {
       completed: task.completed
     };
 
-    console.log('TaskService - updateTask - sending to backend:', taskDTO);
+    console.log('📤 TaskService - updateTask - ID:', id);
+    console.log('📤 TaskService - updateTask - Task original:', task);
+    console.log('📤 TaskService - updateTask - DTO enviado al backend:', taskDTO);
+    console.log('📤 TaskService - updateTask - URL:', `${this.apiUrl}/${id}`);
 
     return this.http.put<Task>(`${this.apiUrl}/${id}`, taskDTO).pipe(
-      tap(response => console.log('TaskService - updateTask - backend response:', response)),
+      tap(response => {
+        console.log('📥 TaskService - updateTask - Respuesta del backend:', response);
+        console.log('📥 TaskService - updateTask - cardId en respuesta:', response.cardId);
+        console.log('📥 TaskService - updateTask - position en respuesta:', response.position);
+      }),
       map((response: any) => ({
         ...response,
         completed: response.completed ?? taskDTO.completed // Usar el valor del backend si existe
       })),
-      tap(finalTask => console.log('TaskService - updateTask - final mapped task:', finalTask)),
+      tap(finalTask => {
+        console.log('✅ TaskService - updateTask - Task final mapeada:', finalTask);
+        console.log('✅ TaskService - updateTask - cardId final:', finalTask.cardId);
+        console.log('✅ TaskService - updateTask - position final:', finalTask.position);
+      }),
       catchError((error: any) => {
-        console.error('TaskService updateTask error:', error);
+        console.error('❌ TaskService updateTask error:', error);
+        console.error('❌ Error details:', error.error);
         throw error;
       })
     );

@@ -91,6 +91,28 @@
   }
 }
 
+.processing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  margin-top: 8px;
+  border: 1px solid rgba(76, 175, 80, 0.3);
+
+  .spin {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
 .cards-container {
   display: flex;
   gap: 20px;
@@ -120,6 +142,12 @@
   transition: background-color 0.2s ease;
 }
 
+.cdk-drop-list-receiving {
+  background-color: rgba(76, 175, 80, 0.1);
+  border: 2px dashed #4caf50;
+  transition: all 0.2s ease;
+}
+
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
@@ -142,6 +170,13 @@
   width: 300px;
   height: fit-content;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+
+  &.cdk-drop-list-receiving {
+    background-color: rgba(76, 175, 80, 0.05);
+    border: 2px dashed #4caf50;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  }
 
   h3 {
     margin: 0 0 12px;
@@ -153,6 +188,19 @@
     margin: 12px 0;
     max-height: calc(100vh - 250px);
     overflow-y: auto;
+    min-height: 50px;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+
+    &.cdk-drop-list-dragging {
+      background-color: rgba(0, 0, 0, 0.04);
+    }
+
+    &.cdk-drop-list-receiving {
+      background-color: rgba(76, 175, 80, 0.1);
+      border: 2px dashed #4caf50;
+    }
   }
 
   .task {
