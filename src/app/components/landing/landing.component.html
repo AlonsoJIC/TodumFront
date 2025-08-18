@@ -1,0 +1,93 @@
+<div class="landing-container">
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        Bienvenido a <span class="brand">Todum</span>
+      </h1>
+      <p class="hero-subtitle">
+        La forma más inteligente de organizar tus proyectos, tareas y colaborar con tu equipo.
+        Todo en un solo lugar, simple y poderoso.
+      </p>
+      <div class="hero-actions">
+        <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-button">
+          <mat-icon>rocket_launch</mat-icon>
+          Empezar Gratis
+        </button>
+        <button mat-stroked-button routerLink="/auth/login" class="login-button">
+          <mat-icon>login</mat-icon>
+          Iniciar Sesión
+        </button>
+      </div>
+    </div>
+    <div class="hero-image">
+      <div class="demo-board">
+        <div class="demo-card">
+          <div class="demo-header">📋 Proyecto Web</div>
+          <div class="demo-task">✅ Diseño completado</div>
+          <div class="demo-task">🔄 Desarrollo en progreso</div>
+          <div class="demo-task">⏳ Testing pendiente</div>
+        </div>
+        <div class="demo-card">
+          <div class="demo-header">🚀 Marketing</div>
+          <div class="demo-task">✅ Plan estratégico</div>
+          <div class="demo-task">🔄 Crear contenido</div>
+          <div class="demo-task">⏳ Lanzamiento</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features">
+    <div class="container">
+      <h2 class="section-title">¿Por qué elegir Todum?</h2>
+      <div class="features-grid">
+        @for (feature of features; track feature.title) {
+        <div class="feature-card">
+          <div class="feature-icon">
+            <mat-icon>{{ feature.icon }}</mat-icon>
+          </div>
+          <h3 class="feature-title">{{ feature.title }}</h3>
+          <p class="feature-description">{{ feature.description }}</p>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="container">
+      <h2 class="cta-title">¿Listo para ser más productivo?</h2>
+      <p class="cta-subtitle">
+        Únete a miles de usuarios que ya organizan sus proyectos con Todum
+      </p>
+      <button mat-raised-button color="primary" routerLink="/auth/register" class="cta-large">
+        <mat-icon>arrow_forward</mat-icon>
+        Crear Cuenta Gratis
+      </button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>Todum</h3>
+          <p>Organiza. Colabora. Alcanza tus objetivos.</p>
+        </div>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Acerca de</a>
+          <a href="#" class="footer-link">Privacidad</a>
+          <a href="#" class="footer-link">Términos</a>
+          <a href="#" class="footer-link">Contacto</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Todum. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+</div>

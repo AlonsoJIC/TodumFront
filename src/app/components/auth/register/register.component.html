@@ -1,0 +1,103 @@
+<div class="auth-container">
+  <div class="auth-card-wrapper">
+    <mat-card class="auth-card">
+      <mat-card-header>
+        <div class="auth-header">
+          <h1 class="brand-title">Todum</h1>
+          <h2 class="auth-title">Crear Cuenta</h2>
+          <p class="auth-subtitle">Únete a miles de usuarios que organizan sus proyectos con Todum.</p>
+        </div>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+          <!-- Name Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Nombre Completo</mat-label>
+            <input matInput type="text" [(ngModel)]="registerData.name" name="name" required minlength="2"
+              #name="ngModel" autocomplete="name">
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="name.invalid && (name.dirty || name.touched)">
+              <span *ngIf="name.errors?.['required']">El nombre es requerido</span>
+              <span *ngIf="name.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Email Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Correo Electrónico</mat-label>
+            <input matInput type="email" [(ngModel)]="registerData.email" name="email" required email #email="ngModel"
+              autocomplete="email">
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="email.invalid && (email.dirty || email.touched)">
+              <span *ngIf="email.errors?.['required']">El email es requerido</span>
+              <span *ngIf="email.errors?.['email']">Por favor ingresa un email válido</span>
+            </mat-error>
+          </mat-form-field>
+
+          <!-- Password Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="hidePassword ? 'password' : 'text'" [(ngModel)]="registerData.password"
+              name="password" required minlength="6" #password="ngModel" autocomplete="new-password">
+            <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Hide password'" [attr.aria-pressed]="hidePassword">
+              <mat-icon>{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error *ngIf="password.invalid && (password.dirty || password.touched)">
+              <span *ngIf="password.errors?.['required']">La contraseña es requerida</span>
+              <span *ngIf="password.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres</span>
+            </mat-error>
+            <mat-hint *ngIf="registerData.password && isPasswordValid" class="success-hint">
+              <mat-icon class="hint-icon">check_circle</mat-icon>
+              Contraseña válida
+            </mat-hint>
+          </mat-form-field>
+
+          <!-- Confirm Password Field -->
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Confirmar Contraseña</mat-label>
+            <input matInput [type]="hideConfirmPassword ? 'password' : 'text'" [(ngModel)]="confirmPassword"
+              name="confirmPassword" required #confirmPasswordField="ngModel" autocomplete="new-password">
+            <button mat-icon-button matSuffix type="button" (click)="hideConfirmPassword = !hideConfirmPassword"
+              [attr.aria-label]="'Hide confirm password'" [attr.aria-pressed]="hideConfirmPassword">
+              <mat-icon>{{hideConfirmPassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            <mat-error
+              *ngIf="confirmPasswordField.invalid && (confirmPasswordField.dirty || confirmPasswordField.touched)">
+              La confirmación de contraseña es requerida
+            </mat-error>
+            <mat-error *ngIf="confirmPassword && !passwordsMatch && confirmPasswordField.valid">
+              Las contraseñas no coinciden
+            </mat-error>
+            <mat-hint *ngIf="confirmPassword && passwordsMatch && confirmPasswordField.valid" class="success-hint">
+              <mat-icon class="hint-icon">check_circle</mat-icon>
+              Las contraseñas coinciden
+            </mat-hint>
+          </mat-form-field>
+
+          <!-- Submit Button -->
+          <button mat-raised-button color="primary" type="submit" class="auth-button full-width"
+            [disabled]="!registerForm.valid || !passwordsMatch || isLoading">
+            <mat-icon *ngIf="isLoading" class="spinning">sync</mat-icon>
+            <mat-icon *ngIf="!isLoading">person_add</mat-icon>
+            {{ isLoading ? 'Creando cuenta...' : 'Crear Cuenta' }}
+          </button>
+        </form>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <div class="auth-footer">
+          <p class="auth-link-text">
+            ¿Ya tienes una cuenta?
+            <a routerLink="/auth/login" class="auth-link">Inicia sesión aquí</a>
+          </p>
+          <a routerLink="/" class="back-link">
+            <mat-icon>arrow_back</mat-icon>
+            Volver al inicio
+          </a>
+        </div>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

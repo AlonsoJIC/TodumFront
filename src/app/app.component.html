@@ -1,8 +1,35 @@
 <div class="app-container">
-  <header>
-    <h1>Todum</h1>
+  <!-- Navbar for authenticated users -->
+  <header *ngIf="showNavbar">
+    <mat-toolbar color="primary" class="navbar">
+      <div class="nav-brand" (click)="goToBoards()">
+        <mat-icon>dashboard</mat-icon>
+        <span class="brand-text">Todum</span>
+      </div>
+
+      <span class="nav-spacer"></span>
+
+      <div class="nav-user">
+        <span class="welcome-text">Hola, {{ currentUser?.name }}</span>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <mat-menu #userMenu="matMenu">
+          <button mat-menu-item (click)="goToBoards()">
+            <mat-icon>dashboard</mat-icon>
+            <span>Mis Boards</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Cerrar Sesión</span>
+          </button>
+        </mat-menu>
+      </div>
+    </mat-toolbar>
   </header>
-  <main>
+
+  <!-- Main content -->
+  <main [class.with-navbar]="showNavbar">
     <router-outlet />
   </main>
 </div>
