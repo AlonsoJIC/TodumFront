@@ -46,48 +46,13 @@
         align-items: center;
       }
     }
+  }
 
-    .add-card-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 8px 16px;
-      border-radius: 10px;
-      border: none;
-      background: #007bff;
-      color: white;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-      height: 36px;
-
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      }
-
-      span {
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-      }
-
-      &:hover {
-        background: #0056b3;
-      }
-    }
-
-    .board-title {
-      margin: 0;
-      padding-left: 8px;
-      font-size: 1.75rem;
-      color: #333;
-    }
+  .board-title {
+    margin: 16px 0 0 8px;
+    padding: 0;
+    font-size: 1.75rem;
+    color: #333;
   }
 }
 
@@ -369,6 +334,34 @@
     
     &:hover {
       background-color: rgba(244, 67, 54, 0.1) !important;
+    }
+  }
+}
+
+// Tarjeta especial para agregar carta (estilo idéntico a New Board)
+.add-card-special {
+  background: #f5f5f5 !important;
+  border: 2px dashed #ddd !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 120px;
+  
+  h3 {
+    color: #666 !important;
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+  
+  &:hover {
+    background: #ebebeb !important;
+    transform: translateY(-2px);
+    
+    h3 {
+      color: #555 !important;
     }
   }
 }

@@ -6,10 +6,6 @@
       <mat-icon class="back-icon">arrow_back</mat-icon>
       <span class="back-text">Volver a tus boards</span>
     </div>
-    <button class="add-card-btn" (click)="showAddCard = true">
-      <mat-icon>add</mat-icon>
-      <span>Agregar carta</span>
-    </button>
   </div>
   <h2 class="board-title">{{ board.title }}</h2>
   @if (isProcessingDragDrop) {
@@ -83,6 +79,11 @@
   </div>
   }
 
+  <!-- Tarjeta especial para agregar nueva carta -->
+  <div class="card add-card-special" (click)="showAddCard = true">
+    <h3>+ Agregar carta</h3>
+  </div>
+
 </div>
 
 @if (showAddCard) {
@@ -94,5 +95,5 @@
 <app-task-form (close)="showAddTask = false" (save)="onSaveTask($event)" />
 }
 } @else {
-<p>Loading...</p>
+<p>Cargando...</p>
 }

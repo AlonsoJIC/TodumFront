@@ -10,7 +10,7 @@
   <div class="tasks">
     @if ((card.tasks || []).length === 0) {
     <div class="no-tasks">
-      <p>No tasks yet. Click "Add Task" to create one.</p>
+      <p>No hay tareas aún. Haz clic en "Agregar Tarea" para crear una.</p>
     </div>
     }
     @for (task of card.tasks || []; track task.id) {
@@ -38,13 +38,13 @@
   </div>
 
   <button class="add-task-btn" (click)="showAddTask = true">
-    + Add Task
+    + Agregar Tarea
   </button>
 
   @if (showAddTask) {
   <app-task-form (close)="showAddTask = false" (save)="onSaveTask($event)" />
   }
   } @else {
-  <div class="loading">Loading...</div>
+  <div class="loading">Cargando...</div>
   }
 </div>

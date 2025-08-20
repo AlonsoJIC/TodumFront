@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Board } from '../../models';
@@ -10,7 +10,9 @@ import { Board } from '../../models';
   styleUrls: ['./board-form.component.scss'],
   imports: [CommonModule, FormsModule]
 })
-export class BoardFormComponent {
+export class BoardFormComponent implements OnInit {
+  @Input() editMode = false;
+  @Input() boardData: Board | null = null;
   @Output() close = new EventEmitter<void>();
   @Output() save = new EventEmitter<Partial<Board>>();
 
@@ -18,6 +20,15 @@ export class BoardFormComponent {
     title: '',
     description: ''
   };
+
+  ngOnInit(): void {
+    if (this.editMode && this.boardData) {
+      this.board = {
+        title: this.boardData.title,
+        description: this.boardData.description
+      };
+    }
+  }
 
   onClose(): void {
     this.close.emit();

@@ -1,18 +1,37 @@
 <div class="board-list">
-  <h2>My Boards</h2>
+  <h2>Mis Tableros</h2>
   <div class="board-grid">
     @for (board of boards; track board.id) {
     <div class="board-card" [routerLink]="['/boards', board.id]">
-      <h3>{{ board.title }}</h3>
-      <p>{{ board.description }}</p>
+      <div class="board-content">
+        <h3>{{ board.title }}</h3>
+        <p>{{ board.description }}</p>
+      </div>
+      <div class="board-actions">
+        <button mat-icon-button [matMenuTriggerFor]="boardMenu" class="board-menu-dots"
+          (click)="$event.stopPropagation()">
+          ⋮
+        </button>
+        <mat-menu #boardMenu="matMenu">
+          <button mat-menu-item (click)="editBoard(board, $event)">
+            <mat-icon>edit</mat-icon>
+            <span>Editar</span>
+          </button>
+          <button mat-menu-item (click)="deleteBoard(board, $event)" class="delete-item">
+            <mat-icon>delete</mat-icon>
+            <span>Eliminar</span>
+          </button>
+        </mat-menu>
+      </div>
     </div>
     }
     <div class="board-card new-board" (click)="showBoardForm()">
-      <h3>+ New Board</h3>
+      <h3>+ Nuevo Tablero</h3>
     </div>
   </div>
 </div>
 
 @if (isFormVisible) {
-<app-board-form (close)="hideBoardForm()" (save)="onBoardCreate($event)" />
+<app-board-form [editMode]="editMode" [boardData]="selectedBoard" (close)="hideBoardForm()"
+  (save)="onBoardCreate($event)" />
 }

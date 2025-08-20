@@ -16,19 +16,51 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   cursor: pointer;
   transition: transform 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 
   &:hover {
     transform: translateY(-2px);
+    
+    .board-menu-dots {
+      opacity: 1;
+    }
   }
 
-  h3 {
-    margin: 0 0 10px;
-    color: #333;
+  .board-content {
+    flex: 1;
+    
+    h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+    }
   }
 
-  p {
-    margin: 0;
-    color: #666;
+  .board-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    
+    .board-menu-dots {
+      width: 32px;
+      height: 32px;
+      min-width: 32px;
+      font-size: 16px;
+      color: #666;
+      opacity: 0.7;
+      transition: opacity 0.2s ease;
+
+      &:hover {
+        opacity: 1;
+        background-color: rgba(0, 0, 0, 0.04);
+      }
+    }
   }
 }
 
@@ -45,5 +77,13 @@
   
   &:hover {
     background: #ebebeb;
+  }
+}
+
+::ng-deep .delete-item {
+  color: #f44336 !important;
+  
+  mat-icon {
+    color: #f44336 !important;
   }
 }
